@@ -1,4 +1,7 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using UsuariosApi.Data;
+using UsuariosApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,10 +12,18 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var connString = builder.Configuration.GetConnectionString("UsuarionConnection");
+
 builder.Services.AddDbContext<UsuarioDbContext>(
     opts =>
     {
+        opts.UseMySql(connString, ServerVersion.AutoDetect(connString));
     });
+
+builder.Services
+    .AddIdentity<Usuario, IdentityRole>()
+    .AddEntityFrameworkStores<UsuarioDbContext>()
+    .AddDefaultTokenProviders();
 
 var app = builder.Build();
 
